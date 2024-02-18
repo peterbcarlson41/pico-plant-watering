@@ -67,28 +67,30 @@ export default function Main() {
         onSubmit={handleSave}
         className="flex flex-col gap-5 w-full items-center"
       >
-        <div className="flex flex-row w-full p-6 items-center gap-4">
-          <div className="w-full">
-            <Label htmlFor="time-display">Time between watering</Label>
+        <div className="flex flex-row w-full p-6 items-center gap-4 sm:w-1/2">
+          <div className="w-full text-left">
+            <Label htmlFor="time-display">Time Between</Label>
             <Input
               id="time-display"
+              className="px-0 text-left"
               readOnly
               value={displayedWateringTime || "Not set"}
             />
           </div>
           <div className="w-full">
-            <Label htmlFor="duration-display">Watering duration</Label>
+            <Label htmlFor="duration-display">Duration</Label>
             <Input
               id="duration-display"
+              className="px-0 text-left"
               readOnly
               value={displayedWateringDuration || "Not set"}
             />
           </div>
         </div>
-        <div className="flex flex-col rounded-lg border sm:w-1/2 w-full border-gray-200 p-6 gap-2">
+        <div className="flex flex-col rounded-lg border sm:w-1/2 w-full border-gray-200 p-6 gap-5">
           <div className="flex flex-row gap-2">
-            <div className="flex flex-col gap-2">
-              <Label>Time between watering</Label>
+            <div className="flex flex-col gap-5">
+              <Label>Time Between</Label>
               <div className="flex items-center border rounded-md">
                 <Input
                   placeholder="00"
@@ -115,8 +117,8 @@ export default function Main() {
                 />
               </div>
             </div>
-            <div className="flex flex-col gap-2">
-              <Label>Watering duration</Label>
+            <div className="flex flex-col gap-5">
+              <Label>Duration</Label>
               <div className="flex items-center border rounded-md">
                 <Input
                   placeholder="00"

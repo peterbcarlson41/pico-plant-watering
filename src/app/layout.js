@@ -4,7 +4,7 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
-  title: "Plant Waterer",
+  title: "Plant Manager",
   description: "A web app to control an automatic plant watering system",
   icons: {
     icon: [

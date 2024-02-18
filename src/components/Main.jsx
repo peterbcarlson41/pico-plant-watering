@@ -6,8 +6,17 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
 export default function Main() {
-  const [wateringTime, setWateringTime] = useState("");
-  const [wateringDuration, setWateringDuration] = useState("");
+  // State for watering time
+  const [wateringTimeHours, setWateringTimeHours] = useState("");
+  const [wateringTimeMinutes, setWateringTimeMinutes] = useState("");
+  const [wateringTimeSeconds, setWateringTimeSeconds] = useState("");
+
+  // State for watering duration
+  const [wateringDurationHours, setWateringDurationHours] = useState("");
+  const [wateringDurationMinutes, setWateringDurationMinutes] = useState("");
+  const [wateringDurationSeconds, setWateringDurationSeconds] = useState("");
+
+  // State for displaying watering time and duration
   const [displayedWateringTime, setDisplayedWateringTime] = useState("");
   const [displayedWateringDuration, setDisplayedWateringDuration] =
     useState("");
@@ -15,11 +24,20 @@ export default function Main() {
   const handleSave = (e) => {
     e.preventDefault();
 
-    setDisplayedWateringTime(wateringTime);
-    setDisplayedWateringDuration(wateringDuration);
+    // Format the time and duration for display
+    const time = `${wateringTimeHours}:${wateringTimeMinutes}:${wateringTimeSeconds}`;
+    const duration = `${wateringDurationHours}:${wateringDurationMinutes}:${wateringDurationSeconds}`;
 
-    setWateringTime("");
-    setWateringDuration("");
+    setDisplayedWateringTime(time);
+    setDisplayedWateringDuration(duration);
+
+    // Reset fields
+    setWateringTimeHours("");
+    setWateringTimeMinutes("");
+    setWateringTimeSeconds("");
+    setWateringDurationHours("");
+    setWateringDurationMinutes("");
+    setWateringDurationSeconds("");
   };
 
   return (
@@ -52,26 +70,52 @@ export default function Main() {
             />
           </div>
         </div>
-        <div className="rounded-lg border border-gray-200 grid w-full p-6 items-center gap-4">
-          <div className="grid gap-2">
-            <Label htmlFor="time">Time between watering</Label>
-            <Input
-              id="time"
-              placeholder="dd:mm:ss"
-              value={wateringTime}
-              onChange={(e) => setWateringTime(e.target.value)}
-            />
+        <div className="rounded-lg border border-gray-200 grid grid-cols-3 gap-4 p-6">
+          <div className="flex flex-col gap-2">
+            <Label>Time between watering</Label>
+            <div className="flex items-center border rounded-md">
+              <Input
+                placeholder="00"
+                value={wateringTimeHours}
+                onChange={(e) => setWateringTimeHours(e.target.value)}
+              />
+              <div className="font-bold px-1">:</div>
+              <Input
+                placeholder="00"
+                value={wateringTimeMinutes}
+                onChange={(e) => setWateringTimeMinutes(e.target.value)}
+              />
+              <div className="font-bold px-1">:</div>
+              <Input
+                placeholder="00"
+                value={wateringTimeSeconds}
+                onChange={(e) => setWateringTimeSeconds(e.target.value)}
+              />
+            </div>
           </div>
-          <div className="grid gap-2">
-            <Label htmlFor="duration">Watering duration</Label>
-            <Input
-              id="duration"
-              placeholder="mm:ss"
-              value={wateringDuration}
-              onChange={(e) => setWateringDuration(e.target.value)}
-            />
+          <div className="flex flex-col gap-2">
+            <Label>Watering duration</Label>
+            <div className="flex items-center border rounded-md">
+              <Input
+                placeholder="00"
+                value={wateringDurationHours}
+                onChange={(e) => setWateringDurationHours(e.target.value)}
+              />
+              <div className="font-bold px-1">:</div>
+              <Input
+                placeholder="00"
+                value={wateringDurationMinutes}
+                onChange={(e) => setWateringDurationMinutes(e.target.value)}
+              />
+              <div className="font-bold px-1">:</div>
+              <Input
+                placeholder="00"
+                value={wateringDurationSeconds}
+                onChange={(e) => setWateringDurationSeconds(e.target.value)}
+              />
+            </div>
           </div>
-          <Button type="submit" className="w-full">
+          <Button type="submit" className="col-span-3">
             Save
           </Button>
         </div>

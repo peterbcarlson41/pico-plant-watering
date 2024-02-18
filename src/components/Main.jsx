@@ -21,17 +21,31 @@ export default function Main() {
   const [displayedWateringDuration, setDisplayedWateringDuration] =
     useState("");
 
+  const handleNumericInput = (value, setValue) => {
+    const newValue = value.replace(/[^0-9]/g, "").slice(0, 2); // Allow only numbers, limit to 2 digits
+    setValue(newValue);
+  };
+
   const handleSave = (e) => {
     e.preventDefault();
 
+    // Check each input and set to "00" if empty
+    const hrs = wateringTimeHours || "00";
+    const mins = wateringTimeMinutes || "00";
+    const secs = wateringTimeSeconds || "00";
+    const durHrs = wateringDurationHours || "00";
+    const durMins = wateringDurationMinutes || "00";
+    const durSecs = wateringDurationSeconds || "00";
+
     // Format the time and duration for display
-    const time = `${wateringTimeHours}:${wateringTimeMinutes}:${wateringTimeSeconds}`;
-    const duration = `${wateringDurationHours}:${wateringDurationMinutes}:${wateringDurationSeconds}`;
+    const time = `${hrs}:${mins}:${secs}`;
+    const duration = `${durHrs}:${durMins}:${durSecs}`;
 
     setDisplayedWateringTime(time);
     setDisplayedWateringDuration(duration);
 
-    // Reset fields
+    // Optionally reset fields here if needed
+    // Resetting to empty strings; you might consider resetting to "00" instead
     setWateringTimeHours("");
     setWateringTimeMinutes("");
     setWateringTimeSeconds("");
@@ -49,13 +63,15 @@ export default function Main() {
           watering session.
         </p>
       </div>
-      <form onSubmit={handleSave} className="flex flex-col gap-5 w-full">
+      <form
+        onSubmit={handleSave}
+        className="flex flex-col gap-5 w-full items-center"
+      >
         <div className="flex flex-row w-full p-6 items-center gap-4">
           <div className="w-full">
             <Label htmlFor="time-display">Time between watering</Label>
             <Input
               id="time-display"
-              className="border-none"
               readOnly
               value={displayedWateringTime || "Not set"}
             />
@@ -64,55 +80,74 @@ export default function Main() {
             <Label htmlFor="duration-display">Watering duration</Label>
             <Input
               id="duration-display"
-              className="border-none"
               readOnly
               value={displayedWateringDuration || "Not set"}
             />
           </div>
         </div>
-        <div className="rounded-lg border border-gray-200 grid grid-cols-3 gap-4 p-6">
-          <div className="flex flex-col gap-2">
-            <Label>Time between watering</Label>
-            <div className="flex items-center border rounded-md">
-              <Input
-                placeholder="00"
-                value={wateringTimeHours}
-                onChange={(e) => setWateringTimeHours(e.target.value)}
-              />
-              <div className="font-bold px-1">:</div>
-              <Input
-                placeholder="00"
-                value={wateringTimeMinutes}
-                onChange={(e) => setWateringTimeMinutes(e.target.value)}
-              />
-              <div className="font-bold px-1">:</div>
-              <Input
-                placeholder="00"
-                value={wateringTimeSeconds}
-                onChange={(e) => setWateringTimeSeconds(e.target.value)}
-              />
+        <div className="flex flex-col rounded-lg border sm:w-1/2 w-full border-gray-200 p-6 gap-2">
+          <div className="flex flex-row gap-2">
+            <div className="flex flex-col gap-2">
+              <Label>Time between watering</Label>
+              <div className="flex items-center border rounded-md">
+                <Input
+                  placeholder="00"
+                  value={wateringTimeHours}
+                  onChange={(e) =>
+                    handleNumericInput(e.target.value, setWateringTimeHours)
+                  }
+                />
+                <div className="font-bold px-1">:</div>
+                <Input
+                  placeholder="00"
+                  value={wateringTimeMinutes}
+                  onChange={(e) =>
+                    handleNumericInput(e.target.value, setWateringTimeMinutes)
+                  }
+                />
+                <div className="font-bold px-1">:</div>
+                <Input
+                  placeholder="00"
+                  value={wateringTimeSeconds}
+                  onChange={(e) =>
+                    handleNumericInput(e.target.value, setWateringTimeSeconds)
+                  }
+                />
+              </div>
             </div>
-          </div>
-          <div className="flex flex-col gap-2">
-            <Label>Watering duration</Label>
-            <div className="flex items-center border rounded-md">
-              <Input
-                placeholder="00"
-                value={wateringDurationHours}
-                onChange={(e) => setWateringDurationHours(e.target.value)}
-              />
-              <div className="font-bold px-1">:</div>
-              <Input
-                placeholder="00"
-                value={wateringDurationMinutes}
-                onChange={(e) => setWateringDurationMinutes(e.target.value)}
-              />
-              <div className="font-bold px-1">:</div>
-              <Input
-                placeholder="00"
-                value={wateringDurationSeconds}
-                onChange={(e) => setWateringDurationSeconds(e.target.value)}
-              />
+            <div className="flex flex-col gap-2">
+              <Label>Watering duration</Label>
+              <div className="flex items-center border rounded-md">
+                <Input
+                  placeholder="00"
+                  value={wateringDurationHours}
+                  onChange={(e) =>
+                    handleNumericInput(e.target.value, setWateringDurationHours)
+                  }
+                />
+                <div className="font-bold px-1">:</div>
+                <Input
+                  placeholder="00"
+                  value={wateringDurationMinutes}
+                  onChange={(e) =>
+                    handleNumericInput(
+                      e.target.value,
+                      setWateringDurationMinutes
+                    )
+                  }
+                />
+                <div className="font-bold px-1">:</div>
+                <Input
+                  placeholder="00"
+                  value={wateringDurationSeconds}
+                  onChange={(e) =>
+                    handleNumericInput(
+                      e.target.value,
+                      setWateringDurationSeconds
+                    )
+                  }
+                />
+              </div>
             </div>
           </div>
           <Button type="submit" className="col-span-3">

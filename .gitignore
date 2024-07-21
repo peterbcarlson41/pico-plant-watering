@@ -3,3 +3,5 @@
 #Python
 .venv
 config.py
+motor_test.py
+flash_nuke.uf2

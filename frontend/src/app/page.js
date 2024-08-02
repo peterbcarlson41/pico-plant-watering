@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
 const PICO_IP = "192.168.1.170:8080"; // Replace with your Pico's IP address
 
@@ -12,10 +13,15 @@ export default function Component() {
   const [timeRemaining, setTimeRemaining] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [backendStatus, setBackendStatus] = useState("Checking...");
 
   useEffect(() => {
+    checkBackendStatus();
     fetchWateringInfo();
-    const interval = setInterval(fetchWateringInfo, 60000); // Update every minute
+    const interval = setInterval(() => {
+      checkBackendStatus();
+      fetchWateringInfo();
+    }, 60000); // Check every minute
     return () => clearInterval(interval);
   }, []);
 
@@ -26,15 +32,22 @@ export default function Component() {
     return () => clearInterval(timer);
   }, []);
 
+  const checkBackendStatus = async () => {
+    try {
+      const response = await fetch(`http://${PICO_IP}/watering_info`);
+      setBackendStatus(response.ok ? "Online" : "Offline");
+    } catch (err) {
+      setBackendStatus("Offline");
+    }
+  };
+
   const fetchWateringInfo = async () => {
     try {
       const response = await fetch(`http://${PICO_IP}/watering_info`);
-      if (!response.ok) throw new Error("Failed to fetch watering info");
       const data = await response.json();
       updateStateWithWateringInfo(data);
     } catch (err) {
       console.error("Error fetching watering info:", err);
-      setError("Failed to fetch watering info. Please try again.");
     }
   };
 
@@ -100,6 +113,14 @@ export default function Component() {
     <div className="flex flex-col items-center justify-center min-h-screen bg-background text-foreground">
       <div className="max-w-md w-full space-y-6 p-6 rounded-lg shadow-lg bg-card">
         <div className="text-center">
+          <Badge
+            variant="outline"
+            className={
+              backendStatus === "Online" ? "text-green-500" : "text-red-500"
+            }
+          >
+            {backendStatus}
+          </Badge>
           <h1 className="text-3xl font-bold">Plant Watering System</h1>
           <p className="text-muted-foreground">
             Control your plant's watering schedule
@@ -145,10 +166,9 @@ export default function Component() {
             </span>
           </div>
         </div>
-        <div className="flex space-y-2">
-          <div className="space-x-2">
-            <Button onClick={startMotor}>Test Motor</Button>
-          </div>
+        <div className="flex justify-between space-x-2">
+          <Button onClick={startMotor}>Test Motor</Button>
+          <Button onClick={fetchWateringInfo}>Refresh Watering Time</Button>
         </div>
       </div>
     </div>

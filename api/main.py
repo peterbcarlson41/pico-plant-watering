@@ -9,8 +9,8 @@ import os
 
 # Constants
 PORT = 8080
-WATERING_DURATION_DEFAULT = 5  # Default 5 seconds
-WATERING_DELAY_DEFAULT = 86400  # Default 1 day in seconds
+WATERING_DURATION_DEFAULT = 10  # Default 5 seconds
+WATERING_DELAY_DEFAULT = 86400 * 14 # Default 14 day in seconds
 
 # Motor control setup with L293D
 pwmPIN = 16
@@ -66,20 +66,26 @@ def connect_wifi():
     return status[0]
 
 def run_motor(duration, reverse=False):
-    if reverse:
+    print("Attempting to run motor")
+    try:
+        if reverse:
+            dir1_gp.value(0)
+            dir2_gp.value(1)
+        else:
+            dir1_gp.value(1)
+            dir2_gp.value(0)
+    
+        speed_gp.duty_u16(65535)  # Full speed
+        print("Motor should be running now")
+        utime.sleep(duration)
+    
+        # Stop motor
+        speed_gp.duty_u16(0)
         dir1_gp.value(0)
-        dir2_gp.value(1)
-    else:
-        dir1_gp.value(1)
         dir2_gp.value(0)
-    
-    speed_gp.duty_u16(65535)  # Full speed
-    utime.sleep(duration)
-    
-    # Stop motor
-    speed_gp.duty_u16(0)
-    dir1_gp.value(0)
-    dir2_gp.value(0)
+        print("Motor should have stopped")
+    except Exception as e:
+        print(f"Error running motor: {e}")
     
     return f'Motor ran {"in reverse " if reverse else ""}for {duration} seconds'
 
@@ -146,11 +152,7 @@ def handle_request(request):
         })
     elif 'POST /start_motor' in request:
         response_body = json.dumps({"status": run_motor(watering_duration)})
-    elif 'POST /stop_motor' in request:
-        response_body = json.dumps({"status": "Motor stopped"})
-        speed_gp.duty_u16(0)
-        dir1_gp.value(0)
-        dir2_gp.value(0)
+        run_motor(10, reverse=True)
     else:
         response_body = json.dumps({'error': 'Invalid endpoint'})
     
@@ -161,6 +163,7 @@ def check_watering():
     current_time = utime.time()
     if current_time >= next_watering_time:
         run_motor(watering_duration)
+        run_motor(10, reverse=True)
         next_watering_time = current_time + watering_delay
         save_watering_time(next_watering_time)
 

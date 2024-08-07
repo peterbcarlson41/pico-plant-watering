@@ -7,6 +7,10 @@ import { Badge } from "@/components/ui/badge";
 
 const PICO_IP = "192.168.1.170:8080"; // Replace with your Pico's IP address
 
+const API_URL = process.env.NEXT_PUBLIC_USE_MOCK_API
+  ? "/api/"
+  : `http://${PICO_IP}`;
+
 export default function Component() {
   const [duration, setDuration] = useState("");
   const [delay, setDelay] = useState("");
@@ -34,7 +38,7 @@ export default function Component() {
 
   const checkBackendStatus = async () => {
     try {
-      const response = await fetch(`http://${PICO_IP}/watering_info`);
+      const response = await fetch(`${API_URL}/watering_info`);
       setBackendStatus(response.ok ? "Online" : "Offline");
     } catch (err) {
       setBackendStatus("Offline");
@@ -43,7 +47,7 @@ export default function Component() {
 
   const fetchWateringInfo = async () => {
     try {
-      const response = await fetch(`http://${PICO_IP}/watering_info`);
+      const response = await fetch(`${API_URL}/watering_info`);
       const data = await response.json();
       updateStateWithWateringInfo(data);
     } catch (err) {
@@ -64,7 +68,7 @@ export default function Component() {
   const startMotor = async () => {
     setError(null);
     try {
-      const response = await fetch(`http://${PICO_IP}/start_motor`, {
+      const response = await fetch(`${API_URL}/start_motor`, {
         method: "POST",
       });
       if (!response.ok) throw new Error("Failed to start motor");
@@ -86,7 +90,7 @@ export default function Component() {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(`http://${PICO_IP}/update_watering`, {
+      const response = await fetch(`${API_URL}/update_watering`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -111,7 +115,7 @@ export default function Component() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-background text-foreground">
-      <div className="max-w-md w-full space-y-6 p-6 rounded-lg shadow-lg bg-card">
+      <div className="max-w-md w-full space-y-6 p-6 rounded-lg sm:shadow-lg sm:bg-card">
         <div className="text-center">
           <Badge
             variant="outline"

@@ -5,11 +5,12 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
-const PICO_IP = "192.168.1.170:8080"; // Replace with your Pico's IP address
+const PICO_IP = process.env.NEXT_PUBLIC_PICO_IP; // Replace with your Pico's IP address
 
-const API_URL = process.env.NEXT_PUBLIC_USE_MOCK_API
-  ? "/api/"
-  : `http://${PICO_IP}`;
+const API_URL =
+  process.env.NEXT_PUBLIC_USE_MOCK_API === "true"
+    ? "/api/"
+    : `http://${PICO_IP}`;
 
 export default function Component() {
   const [duration, setDuration] = useState("");

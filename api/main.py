@@ -50,6 +50,8 @@ def connect_wifi():
     wlan = network.WLAN(network.STA_IF)
     wlan.active(True)
     wlan.connect(config.ssid, config.password)
+    
+    # Wait for connection
     max_wait = 10
     while max_wait > 0:
         if wlan.status() < 0 or wlan.status() >= 3:
@@ -57,13 +59,21 @@ def connect_wifi():
         max_wait -= 1
         print('Waiting for connection...')
         utime.sleep(1)
+    
     if wlan.status() != 3:
         raise RuntimeError('Network connection failed')
     else:
-        print('Connected')
+        # Static IP configuration
+        static_ip = config.static_ip     # Set your desired static IP address
+        subnet_mask = config.subnet_mask    # Subnet mask
+        gateway = config.gateway          # Router or gateway IP address
+        dns_server = config.dns_server        # DNS server (Google DNS)
+
+        wlan.ifconfig((static_ip, subnet_mask, gateway, dns_server))
         status = wlan.ifconfig()
         print('Device IP:', status[0])
     return status[0]
+
 
 def run_motor(duration, reverse=False):
     print("Attempting to run motor")

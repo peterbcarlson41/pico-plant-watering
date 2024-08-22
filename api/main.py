@@ -148,8 +148,8 @@ def handle_request(request):
             body_start = request.index('\r\n\r\n') + 4
             body = request[body_start:]
             data = json.loads(body)
-            duration = data.get('duration', WATERING_DURATION_DEFAULT)
-            delay = data.get('delay', WATERING_DELAY_DEFAULT / 86400)
+            duration = data.get('duration')
+            delay = data.get('delay')
             result = update_watering_schedule(duration, delay)
             response_body = json.dumps(result)
         except ValueError:
@@ -167,6 +167,7 @@ def handle_request(request):
         response_body = json.dumps({'error': 'Invalid endpoint'})
     
     return (headers + response_body).encode('utf-8')
+
 
 def check_watering():
     global next_watering_time

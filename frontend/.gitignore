@@ -36,3 +36,6 @@ yarn-error.log*
 next-env.d.ts
 
 /api/
+
+watering_info.json
+watering_time.txt

@@ -1,15 +1,15 @@
 "use client";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
-const PICO_IP = process.env.NEXT_PUBLIC_PICO_IP; // Replace with your Pico's IP address
+const PICO_IP = process.env.NEXT_PUBLIC_PICO_IP;
 
 const API_URL =
   process.env.NEXT_PUBLIC_USE_MOCK_API === "true"
-    ? "/api/"
+    ? "/api"
     : `http://${PICO_IP}`;
 
 export default function Component() {
@@ -74,6 +74,7 @@ export default function Component() {
       });
       if (!response.ok) throw new Error("Failed to start motor");
       const data = await response.json();
+      console.log("Motor started:", data);
     } catch (err) {
       console.error("Error starting motor:", err);
       setError("Failed to start motor. Please try again.");
@@ -90,16 +91,50 @@ export default function Component() {
     e.preventDefault();
     setLoading(true);
     setError(null);
+
+    const updateData = {};
+    if (duration !== "") updateData.duration = Number(duration);
+    if (delay !== "") updateData.delay = Number(delay);
+
     try {
       const response = await fetch(`${API_URL}/update_watering`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          duration: Number(duration),
-          delay: Number(delay),
-        }),
+        body: JSON.stringify(updateData),
+      });
+
+      if (!response.ok) throw new Error("Failed to update watering settings");
+
+      const data = await response.json();
+      updateStateWithWateringInfo(data);
+    } catch (err) {
+      console.error("Error updating watering settings:", err);
+      setError("Failed to update watering settings. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDurationUpdate = async () => {
+    await handleUpdate({ duration: Number(duration) });
+  };
+
+  const handleDelayUpdate = async () => {
+    await handleUpdate({ delay: Number(delay) });
+  };
+
+  const handleUpdate = async (updateData) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetch(`${API_URL}/update_watering`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updateData),
       });
 
       if (!response.ok) throw new Error("Failed to update watering settings");
@@ -135,32 +170,50 @@ export default function Component() {
         <form className="space-y-4" onSubmit={handleSubmit}>
           <div>
             <Label htmlFor="duration">Watering Duration (seconds)</Label>
-            <Input
-              id="duration"
-              type="number"
-              min="1"
-              max="30"
-              placeholder="Enter duration in seconds"
-              className="mt-1"
-              value={duration}
-              onChange={(e) => setDuration(e.target.value)}
-            />
+            <div className="flex space-x-2 items-end">
+              <Input
+                id="duration"
+                type="number"
+                min="1"
+                max="30"
+                placeholder="Enter duration in seconds"
+                className="mt-1 flex-grow"
+                value={duration}
+                onChange={(e) => setDuration(e.target.value)}
+              />
+              <Button
+                type="button"
+                onClick={handleDurationUpdate}
+                disabled={loading || duration === ""}
+              >
+                Update
+              </Button>
+            </div>
           </div>
           <div>
             <Label htmlFor="delay">Delay Between Waterings (days)</Label>
-            <Input
-              id="delay"
-              type="number"
-              min="1"
-              max="30"
-              placeholder="Enter delay in days"
-              className="mt-1"
-              value={delay}
-              onChange={(e) => setDelay(e.target.value)}
-            />
+            <div className="flex space-x-2 items-end">
+              <Input
+                id="delay"
+                type="number"
+                min="1"
+                max="30"
+                placeholder="Enter delay in days"
+                className="mt-1 flex-grow"
+                value={delay}
+                onChange={(e) => setDelay(e.target.value)}
+              />
+              <Button
+                type="button"
+                onClick={handleDelayUpdate}
+                disabled={loading || delay === ""}
+              >
+                Update
+              </Button>
+            </div>
           </div>
           <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? "Updating..." : "Update Watering Settings"}
+            {loading ? "Updating..." : "Update Both Settings"}
           </Button>
         </form>
         <div className="bg-muted p-4 rounded-md">
